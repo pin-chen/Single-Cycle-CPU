@@ -1,4 +1,4 @@
-module ALU_Ctrl( funct_i, ALUOp_i, ALU_operation_o, FURslt_o );
+module ALU_Ctrl( funct_i, ALUOp_i, ALU_operation_o, FURslt_o, jr_o );
 
 //I/O ports 
 input      [6-1:0] funct_i;
@@ -6,10 +6,12 @@ input      [3-1:0] ALUOp_i;
 
 output     [4-1:0] ALU_operation_o;  
 output     [2-1:0] FURslt_o;
+output		jr_o;
      
 //Internal Signals
 wire		[4-1:0] ALU_operation_o;
 wire		[2-1:0] FURslt_o;
+wire		jr_o;
 
 //Main function
 assign ALU_operation_o = ({ALUOp_i,funct_i} == 9'b010010011 || ALUOp_i == 3'b011) ? 4'b0010 : //add addi
@@ -32,5 +34,5 @@ assign FURslt_o =  ({ALUOp_i,funct_i} == 9'b010010011 || ALUOp_i == 3'b011) ? 2'
 					({ALUOp_i,funct_i} == 9'b010000010) ? 2'b01 :  //srl
 					({ALUOp_i,funct_i} == 9'b010000110) ? 2'b01 :  //sllv
 					({ALUOp_i,funct_i} == 9'b010000100) ? 2'b01 : 2'b00;  //srlv others
-
+assign jr_o = ({ALUOp_i,funct_i} == 9'b010001000) ? 1'b1 : 1'b0;
 endmodule     
