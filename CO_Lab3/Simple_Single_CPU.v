@@ -37,7 +37,7 @@ wire	[32-1:0] shift_instr_o;
 wire	[32-1:0] shift_sign_instr;
 wire	[32-1:0] mux_add_add_pc;
 wire	[32-1:0] mux_mux_add_add_pc;
-wire	BranchType;
+wire	[2-1:0] BranchType;
 wire	mux_zero;
 wire	[32-1:0] mux3_result;
 wire	[32-1:0] DM_result;
@@ -99,7 +99,7 @@ Mux2to1 #(.size(32)) JUMP(
 Mux2to1 #(.size(1)) ZERO(
         .data0_i(zero),
         .data1_i(~zero),
-        .select_i(BranchType),
+        .select_i(BranchType[0]),
         .data_o(mux_zero)
         );	
 //

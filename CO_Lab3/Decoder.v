@@ -50,7 +50,7 @@ always@(*)
 		end
 		6'b001000 : begin
 			RegDst_o_r 		= 1'b0;
-			ALUOp_o_r 	 	= 3'b011;
+			ALUOp_o_r 	 	= 3'b100;
 			ALUSrc_o_r 		= 1'b1;
 			Branch_o_r 		= 1'b0;
 			MemRead_o_r 	= 1'b0;
@@ -176,11 +176,9 @@ always@(*)
 	assign Branch_o 	= Branch_o_r;
 	assign MemRead_o 	= MemRead_o_r;
 	assign MemWrite_o 	= MemWrite_o_r;
-	assign MemtoReg_o 	= MemtoReg_o_r;
-	assign BranchType_o = BranchType_o_r;
-	assign Jump_o 		= Jump_o_r;
 	assign RegWrite_o 	= RegWrite_o_r;
-	 	
-
+	assign MemtoReg_o 	= MemtoReg_o_r;
+	assign Jump_o 		= Jump_o_r;
+	assign BranchType_o = BranchType_o_r;
 endmodule
    
