@@ -33,8 +33,6 @@ wire	MemRead;
 wire	MemWrite;
 wire	MemtoReg;
 wire	[32-1:0] add_add_pc;
-wire	[32-1:0] shift_instr_o;
-wire	[32-1:0] shift_sign_instr;
 wire	[32-1:0] mux_add_add_pc;
 wire	[32-1:0] mux_mux_add_add_pc;
 wire	[2-1:0] BranchType;
@@ -51,7 +49,7 @@ wire	[32-1:0] next_pc;
 Program_Counter PC(
         .clk_i(clk_i),      
 	    .rst_n(rst_n),     
-	    .pc_in_i(next_pc),
+	    .pc_in_i(mux_mux_add_add_pc),
 	    .pc_out_o(pc_inst) 
 	    );
 	
@@ -64,23 +62,9 @@ Adder Adder1(
 //new
 Adder Adder2(
         .src1_i(add_pc),     
-	    .src2_i(shift_sign_instr),
+	    .src2_i(sign_instr << 2),
 	    .sum_o(add_add_pc)    
 	    );
-
-Shifter shifter_left2_1( 
-		.result(shift_instr_o), 
-		.leftRight(1'b0),
-		.shamt(5'b00010),
-		.sftSrc(instr_o) 
-		);
-		
-Shifter shifter_left2_2( 
-		.result(shift_sign_instr), 
-		.leftRight(1'b0),
-		.shamt(5'b00010),
-		.sftSrc(sign_instr) 
-		);
 		
 Mux2to1 #(.size(32)) branch(
         .data0_i(add_pc),
@@ -91,7 +75,7 @@ Mux2to1 #(.size(32)) branch(
 		
 Mux2to1 #(.size(32)) JUMP(
         .data0_i(mux_add_add_pc),
-        .data1_i({add_pc[31:28],shift_instr_o[27:0]}),
+        .data1_i({add_pc[31:28],instr_o[27:0] << 2}),
         .select_i(Jump),
         .data_o(mux_mux_add_add_pc)
         );	
@@ -112,7 +96,7 @@ Mux2to1 #(.size(5)) Mux_Write_Reg(
         .data0_i(instr_o[20:16]),
         .data1_i(instr_o[15:11]),
         .select_i(RegDst),
-        .data_o(Write_reg_j)
+        .data_o(Write_reg)
         );	
 		
 Reg_File RF(
@@ -211,10 +195,10 @@ Mux2to1 #(.size(32)) Memto(
         .data0_i(mux3_result),
         .data1_i(DM_result),
         .select_i(MemtoReg),
-        .data_o(Write_Data_j)
+        .data_o(Write_Data)
         );	
 //
-
+/*
 //jal
 Mux2to1 #(.size(5)) Mux_Write_Reg_jal(
         .data0_i(Write_reg_j),
@@ -236,8 +220,5 @@ Mux2to1 #(.size(32)) addr_jr(
         .select_i(jr),
         .data_o(next_pc)
         );	
-//
+*/
 endmodule
-
-
-
