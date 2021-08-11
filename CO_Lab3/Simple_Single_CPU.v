@@ -1,3 +1,6 @@
+// Class: 109暑 計算機組織 蔡文錦
+// Author: 陳品劭 109550206
+// Date: 20210812
 module Simple_Single_CPU( clk_i, rst_n );
 
 //I/O port

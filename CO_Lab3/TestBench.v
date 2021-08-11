@@ -1,3 +1,6 @@
+// Class: 109暑 計算機組織 蔡文錦
+// Author: 陳品劭 109550206
+// Date: 20210812
 `timescale 1ns/1ps
 `define CYCLE_TIME 10			
 `define END_COUNT 600
