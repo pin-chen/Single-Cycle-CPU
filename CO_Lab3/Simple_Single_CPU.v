@@ -26,30 +26,11 @@ wire [32-1:0] result_ALU;
 wire [32-1:0] result_Shifter;
 wire overflow;
 wire [5-1:0] ShamtSrc;
-//
-wire	Branch;
-wire	Jump;
-wire	MemRead;
-wire	MemWrite;
-wire	MemtoReg;
-wire	[32-1:0] add_add_pc;
-wire	[32-1:0] mux_add_add_pc;
-wire	[32-1:0] mux_mux_add_add_pc;
-wire	[2-1:0] BranchType;
-wire	mux_zero;
-wire	[32-1:0] mux3_result;
-wire	[32-1:0] DM_result;
-wire 	[5-1:0] Write_reg_j;
-wire 	[32-1:0] Write_Data_j;
-wire	jr;
-wire	[32-1:0] next_pc;
-//
-
 //modules
 Program_Counter PC(
         .clk_i(clk_i),      
 	    .rst_n(rst_n),     
-	    .pc_in_i(mux_mux_add_add_pc),
+	    .pc_in_i(add_pc),   
 	    .pc_out_o(pc_inst) 
 	    );
 	
@@ -59,34 +40,6 @@ Adder Adder1(
 	    .sum_o(add_pc)    
 	    );
 	
-//new
-Adder Adder2(
-        .src1_i(add_pc),     
-	    .src2_i(sign_instr << 2),
-	    .sum_o(add_add_pc)    
-	    );
-		
-Mux2to1 #(.size(32)) branch(
-        .data0_i(add_pc),
-        .data1_i(add_add_pc),
-        .select_i(mux_zero & Branch),
-        .data_o(mux_add_add_pc)
-        );	
-		
-Mux2to1 #(.size(32)) JUMP(
-        .data0_i(mux_add_add_pc),
-        .data1_i({add_pc[31:28],instr_o[27:0] << 2}),
-        .select_i(Jump),
-        .data_o(mux_mux_add_add_pc)
-        );	
-		
-Mux2to1 #(.size(1)) ZERO(
-        .data0_i(zero),
-        .data1_i(~zero),
-        .select_i(BranchType[0]),
-        .data_o(mux_zero)
-        );	
-//
 Instr_Memory IM(
         .pc_addr_i(pc_inst),  
 	    .instr_o(instr_o)    
@@ -116,21 +69,14 @@ Decoder Decoder(
 	    .RegWrite_o(RegWrite), 
 	    .ALUOp_o(ALUOp),   
 	    .ALUSrc_o(ALUSrc),   
-	    .RegDst_o(RegDst), 
-		.Branch_o(Branch),
-		.Jump_o(Jump),
-		.MemRead_o(MemRead),
-		.MemWrite_o(MemWrite),
-		.MemtoReg_o(MemtoReg),
-		.BranchType_o(BranchType)
+	    .RegDst_o(RegDst)   
 		);
 
 ALU_Ctrl AC(
         .funct_i(instr_o[6-1:0]),   
         .ALUOp_i(ALUOp),   
         .ALU_operation_o(ALUCtrl),
-		.FURslt_o(FURslt),
-		.jr_o(jr)
+		.FURslt_o(FURslt)
         );
 	
 Sign_Extend SE(
@@ -178,47 +124,10 @@ Mux3to1 #(.size(32)) RDdata_Source(
         .data1_i(result_Shifter),
 		.data2_i(zero_instr),
         .select_i(FURslt),
-        .data_o(mux3_result)
+        .data_o(Write_Data)
         );			
 
-//
-Data_Memory DM(
-		.clk_i(clk_i),
-		.addr_i(mux3_result),
-		.data_i(rt_data),
-		.MemRead_i(MemRead),
-		.MemWrite_i(MemWrite),
-		.data_o(DM_result)
-		);
-
-Mux2to1 #(.size(32)) Memto(
-        .data0_i(mux3_result),
-        .data1_i(DM_result),
-        .select_i(MemtoReg),
-        .data_o(Write_Data)
-        );	
-//
-/*
-//jal
-Mux2to1 #(.size(5)) Mux_Write_Reg_jal(
-        .data0_i(Write_reg_j),
-        .data1_i(5'b11111),
-        .select_i(jump),
-        .data_o(Write_reg)
-        );	
-
-Mux2to1 #(.size(32)) Memto_jal(
-        .data0_i(Write_Data_j),
-        .data1_i(add_pc),
-        .select_i(jump),
-        .data_o(Write_Data)
-        );	
-//jr
-Mux2to1 #(.size(32)) addr_jr(
-        .data0_i(mux_mux_add_add_pc),
-        .data1_i(rs_data),
-        .select_i(jr),
-        .data_o(next_pc)
-        );	
-*/
 endmodule
+
+
+
